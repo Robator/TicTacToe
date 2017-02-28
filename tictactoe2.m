@@ -13,8 +13,9 @@
 %                 if state(i,j,1)==0
 
 function tictactoe2()
+global summa
+summa = 0
     board = [0,0,0,0,0,0,0,0,0];
-%     board = zeros(4,4,4)
     player=1;
     for turn=1:9
         if win(board) == 0
@@ -75,6 +76,7 @@ function draw( b)
 end
 
 function a = minimax(board, player) 
+global summa
      winner = win(board);
     if(winner ~= 0) 
         a = winner*player;
@@ -83,6 +85,9 @@ function a = minimax(board, player)
     move = -1;
     score = -2;
     for i=1:9
+        summa=summa+i;
+        
+            
         if(board(i) == 0)
             board(i) = player;
             thisScore = -minimax(board, player*(-1));
@@ -118,6 +123,8 @@ end
 
 function board = playerMove(board) 
     move = -1;
+    global summa
+    disp(summa)
     while move >= 9 || move < 0 || board(move) ~= 0
         move = input('\nInput move ([1..8]): ')
     end
