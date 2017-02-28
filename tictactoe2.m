@@ -1,22 +1,9 @@
-% function [] = tictactoe2()
-%     is_x = 1; % keeps track of the current player
-%     global state
-%     state = zeros(4,4,4)
-%     minimax
-%          
-% end
-% function [] = minimax(level,player)
-%     global state
-%     for i=1:4
-%         for j=1:4
-%             for k=1:4
-%                 if state(i,j,1)==0
-
-function tictactoe2()
-%     board = [0,0,0,0,0,0,0,0,0];
-    board = zeros(4,4,4)
+function [] = tictactoe2()
+    tempboard = zeros(64);
+    board = tempboard(1,:)
+    disp(board)
     player=1;
-    for turn=1:9
+    for turn=1:64
         if win(board) == 0
             if rem(turn+player, 2) == 0
                 board = computerMove(board);
@@ -26,11 +13,7 @@ function tictactoe2()
             end
         end
     end
-    write_winner(board)
-end
-
-function write_winner(board)
-switch win(board) 
+    switch win(board) 
         case 0
             disp('A draw. How droll.\n');
         case 1
@@ -40,6 +23,7 @@ switch win(board)
             disp('You win. Inconceivable!\n');
     end
 end
+
 
 function c = gridChar(i) 
     switch i 
@@ -52,39 +36,51 @@ function c = gridChar(i)
     end
 end
 
-function win = win(board) 
-    wins = [1 2 3; 4 5 6; 7 8 9; 1 4 7; 2 5 8; 3 6 9; 1 5 9; 3 5 7];
-    for i=1:8
+function [win] = win(board) 
+    wins1 = [1 2 3 4; 5 6 7 8; 9 10 11 12; 13 14 15 16;
+        1 5 9 13; 2 6 10 14; 3 7 11 15; 4 8 12 16;
+        1 6 11 16; 4 7 10 13];
+    wins2 = wins1+16;
+    wins3 = wins2+16;
+    wins4 = wins3+16;%40
+    wins5 = [1 17 33 49; 2 18 34 50; 3 19 35 51; 4 20 36 52; 1 18 35 52; 4 19 34 49];
+    wins6 = wins5+4;
+    wins7 = wins6+4;
+    wins8 = wins7+4;%24
+    wins9 = [1 22 43 64; 4 23 42 61; 13 26 39 52; 16 27 38 49];
+    wins = cat(1, wins1, wins2, wins3, wins4, wins5, wins6, wins7, wins8, wins9);
+    win =0;
+    
+    for i=1:68
         if board(wins(i,1)) ~= 0 && ...
            board(wins(i,1)) == board(wins(i,2)) && ... 
-           board(wins(i,1)) == board(wins(i,3))
-            win = board(wins(i,3));
-            return
+           board(wins(i,1)) == board(wins(i,3)) && ...
+           board(wins(i,1)) == board(wins(i,4))
+            win = board(wins(i,1));
+            break;
         end
     end
-    win = 0;
 end
 
-function draw( b)
-    for i:1:4
-        fprintf(' %c | %c | %c\n',gridChar(b(1)()),gridChar(b(2)),gridChar(b(3)));
-        disp('---+---+---\n');
-        fprintf(' %c | %c | %c\n',gridChar(b(4)),gridChar(b(5)),gridChar(b(6)));
-        disp('---+---+---\n');
-        fprintf(' %c | %c | %c\n',gridChar(b(7)),gridChar(b(8)),gridChar(b(9)));
-        disp('\n')
-    end
+function [] = draw( b)
+    fprintf(' %c | %c | %c\n',gridChar(b(1)),gridChar(b(2)),gridChar(b(3)));
+    disp('---+---+---\n');
+    fprintf(' %c | %c | %c\n',gridChar(b(4)),gridChar(b(5)),gridChar(b(6)));
+    disp('---+---+---\n');
+    fprintf(' %c | %c | %c\n',gridChar(b(7)),gridChar(b(8)),gridChar(b(9)));
+    disp('\n')
 end
 
-function a = minimax(board, player) 
+function [a] = minimax(board, player) 
      winner = win(board);
     if(winner ~= 0) 
         a = winner*player;
+        return;
     end
 
     move = -1;
     score = -2;
-    for i=1:9
+    for i=1:64
         if(board(i) == 0)
             board(i) = player;
             thisScore = -minimax(board, player*(-1));
@@ -97,16 +93,18 @@ function a = minimax(board, player)
     end
     if(move == -1) 
         a = 0;
+        return;
     end
     a = score;
 end
 
 function board = computerMove(board) 
-    move = 1;
+    move = -1;
     score = -2;
     for i=1:9
         if(board(i) == 0) 
             board(i) = 1;
+            disp('!')
             tempScore = -minimax(board, -1);
             board(i) = 0;
             if(tempScore > score) 
@@ -119,9 +117,9 @@ function board = computerMove(board)
 end
 
 function board = playerMove(board) 
-    move = -1;
-    while move >= 9 || move < 0 || board(move) ~= 0
-        move = input('\nInput move ([1..8]): ')
+    move = 1;
+    while (move >= 9 || move < 0 || board(move) ~= 0)
+        move = input('\nInput move ([0..8]): ');
     end
     board(move) = -1;
 end
