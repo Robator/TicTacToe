@@ -100,8 +100,8 @@ global summa
     move = -1;
     score = -2;
     for i=1:64
-        summa=summa+i
-        disp(summa)
+        summa=summa+i;
+        
         if(board(i) == 0)
             board(i) = player;
             
@@ -139,8 +139,11 @@ function board = computerMove(board)
 end
 
 function board = playerMove(board) 
+global summa
     move = 1;
+    
     while (move >= 9 || move < 0 || board(move) ~= 0)
+        disp(summa)
         move = input('\nInput move ([0..8]): ');
     end
     board(move) = -1;
