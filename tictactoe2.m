@@ -1,7 +1,22 @@
-function [] = tictactoe2()
-    tempboard = zeros(64);
-    board = tempboard(1,:)
-    disp(board)
+
+% function [] = tictactoe2()
+%     is_x = 1; % keeps track of the current player
+%     global state
+%     state = zeros(4,4,4)
+%     minimax
+%          
+% end
+% function [] = minimax(level,player)
+%     global state
+%     for i=1:4
+%         for j=1:4
+%             for k=1:4
+%                 if state(i,j,1)==0
+
+function tictactoe2()
+    board = [0,0,0,0,0,0,0,0,0];
+%     tempboard = zeros(64);
+%     board = tempboard(1,:)
     player=1;
     for turn=1:64
         if win(board) == 0
@@ -62,13 +77,14 @@ function [win] = win(board)
     end
 end
 
-function [] = draw( b)
-    fprintf(' %c | %c | %c\n',gridChar(b(1)),gridChar(b(2)),gridChar(b(3)));
-    disp('---+---+---\n');
-    fprintf(' %c | %c | %c\n',gridChar(b(4)),gridChar(b(5)),gridChar(b(6)));
-    disp('---+---+---\n');
-    fprintf(' %c | %c | %c\n',gridChar(b(7)),gridChar(b(8)),gridChar(b(9)));
-    disp('\n')
+
+function draw( b)
+        fprintf(' %c | %c | %c\n',gridChar(b(1)),gridChar(b(2)),gridChar(b(3)));
+        disp('---+---+---\n');
+        fprintf(' %c | %c | %c\n',gridChar(b(4)),gridChar(b(5)),gridChar(b(6)));
+        disp('---+---+---\n');
+        fprintf(' %c | %c | %c\n',gridChar(b(7)),gridChar(b(8)),gridChar(b(9)));
+        disp('\n')
 end
 
 function [a] = minimax(board, player) 
