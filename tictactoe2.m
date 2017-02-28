@@ -14,9 +14,11 @@
 %                 if state(i,j,1)==0
 
 function tictactoe2()
-    board = [0,0,0,0,0,0,0,0,0];
-%     tempboard = zeros(64);
-%     board = tempboard(1,:)
+global summa
+summa =0
+%     board = [0,0,0,0,0,0,0,0,0];
+    tempboard = zeros(64);
+    board = tempboard(1,:)
     player=1;
     for turn=1:64
         if win(board) == 0
@@ -88,6 +90,7 @@ function draw( b)
 end
 
 function [a] = minimax(board, player) 
+global summa
      winner = win(board);
     if(winner ~= 0) 
         a = winner*player;
@@ -97,8 +100,11 @@ function [a] = minimax(board, player)
     move = -1;
     score = -2;
     for i=1:64
+        summa=summa+i
+        disp(summa)
         if(board(i) == 0)
             board(i) = player;
+            
             thisScore = -minimax(board, player*(-1));
             if(thisScore > score) 
                 score = thisScore;
@@ -117,10 +123,10 @@ end
 function board = computerMove(board) 
     move = -1;
     score = -2;
+    
     for i=1:9
         if(board(i) == 0) 
             board(i) = 1;
-            disp('!')
             tempScore = -minimax(board, -1);
             board(i) = 0;
             if(tempScore > score) 
