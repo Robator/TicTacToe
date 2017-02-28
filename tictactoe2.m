@@ -13,8 +13,8 @@
 %                 if state(i,j,1)==0
 
 function tictactoe2()
-%     board = [0,0,0,0,0,0,0,0,0];
-    board = zeros(4,4,4)
+    board = [0,0,0,0,0,0,0,0,0];
+%     board = zeros(4,4,4)
     player=1;
     for turn=1:9
         if win(board) == 0
@@ -66,14 +66,12 @@ function win = win(board)
 end
 
 function draw( b)
-    for i:1:4
-        fprintf(' %c | %c | %c\n',gridChar(b(1)()),gridChar(b(2)),gridChar(b(3)));
+        fprintf(' %c | %c | %c\n',gridChar(b(1)),gridChar(b(2)),gridChar(b(3)));
         disp('---+---+---\n');
         fprintf(' %c | %c | %c\n',gridChar(b(4)),gridChar(b(5)),gridChar(b(6)));
         disp('---+---+---\n');
         fprintf(' %c | %c | %c\n',gridChar(b(7)),gridChar(b(8)),gridChar(b(9)));
         disp('\n')
-    end
 end
 
 function a = minimax(board, player) 
