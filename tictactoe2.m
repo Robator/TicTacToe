@@ -14,7 +14,7 @@
 
 function tictactoe2()
 global summa
-summa = 0
+summa = 0;
     board = [0,0,0,0,0,0,0,0,0];
     player=1;
     for turn=1:9
@@ -85,11 +85,10 @@ global summa
     move = -1;
     score = -2;
     for i=1:9
-        summa=summa+i;
-        
-            
+        summa=summa+1;
         if(board(i) == 0)
             board(i) = player;
+            
             thisScore = -minimax(board, player*(-1));
             if(thisScore > score) 
                 score = thisScore;
@@ -100,17 +99,20 @@ global summa
     end
     if(move == -1) 
         a = 0;
+        return
     end
     a = score;
 end
 
 function board = computerMove(board) 
     move = 1;
+    global summa;
     score = -2;
     for i=1:9
         if(board(i) == 0) 
             board(i) = 1;
             tempScore = -minimax(board, -1);
+%             disp(summa)
             board(i) = 0;
             if(tempScore > score) 
                 score = tempScore;
@@ -125,7 +127,7 @@ function board = playerMove(board)
     move = -1;
     global summa
     disp(summa)
-    while move >= 9 || move < 0 || board(move) ~= 0
+    while move > 9 || move <= 0 || board(move) ~= 0
         move = input('\nInput move ([1..8]): ')
     end
     board(move) = -1;
