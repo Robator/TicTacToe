@@ -1,15 +1,27 @@
+% function [] = tictactoe2()
+%     is_x = 1; % keeps track of the current player
+%     global state
+%     state = zeros(4,4,4)
+%     minimax
+%          
+% end
+% function [] = minimax(level,player)
+%     global state
+%     for i=1:4
+%         for j=1:4
+%             for k=1:4
+%                 if state(i,j,1)==0
+
 function [] = tictactoe2()
-    tempboard = zeros(64);
-    board = tempboard(1,:)
-    disp(board)
-    player=1;
+    board = zeros(64);
+    player=2;
     for turn=1:64
         if win(board) == 0
             if rem(turn+player, 2) == 0
-                board = computerMove(board);
+                qStep(board);
             else 
-                draw(board);
-                board = playerMove(board);
+               
+                playerMove(board);
             end
         end
     end
@@ -17,24 +29,12 @@ function [] = tictactoe2()
         case 0
             disp('A draw. How droll.\n');
         case 1
-            draw(board);
             disp('You lose.\n');
         case -1
             disp('You win. Inconceivable!\n');
     end
 end
 
-
-function c = gridChar(i) 
-    switch i 
-        case -1 
-            c='X';
-        case 0
-            c=' ';
-        case 1
-            c='O';
-    end
-end
 
 function [win] = win(board) 
     wins1 = [1 2 3 4; 5 6 7 8; 9 10 11 12; 13 14 15 16;
@@ -60,15 +60,6 @@ function [win] = win(board)
             break;
         end
     end
-end
-
-function [] = draw( b)
-    fprintf(' %c | %c | %c\n',gridChar(b(1)),gridChar(b(2)),gridChar(b(3)));
-    disp('---+---+---\n');
-    fprintf(' %c | %c | %c\n',gridChar(b(4)),gridChar(b(5)),gridChar(b(6)));
-    disp('---+---+---\n');
-    fprintf(' %c | %c | %c\n',gridChar(b(7)),gridChar(b(8)),gridChar(b(9)));
-    disp('\n')
 end
 
 function [a] = minimax(board, player) 
@@ -98,29 +89,152 @@ function [a] = minimax(board, player)
     a = score;
 end
 
-function board = computerMove(board) 
+
+function board = playerMove(board) 
     move = -1;
-    score = -2;
-    for i=1:9
-        if(board(i) == 0) 
-            board(i) = 1;
-            disp('!')
-            tempScore = -minimax(board, -1);
-            board(i) = 0;
-            if(tempScore > score) 
-                score = tempScore;
-                move = i;
+    while move >= 64 || move < 0 || board(move) ~= 0
+        moveVec = input('\nInput move ([1..4, 1..4, 1..4]): ');
+        move = moveVec(1)+(moveVec(2)-1)*4-1 +(moveVec(3)-1)*16-1; 
+    end
+    board(move) = -1;
+end
+
+function Q = getQ(state)
+ fid = fopen( 'values.txt');
+    tline = fgetl(fid);
+    i =1;
+    states = cell(0);
+    values = cell(0);
+    while ischar(tline)
+    input = strsplit(tline, '#');
+     states{i} =input(1);
+     values{i} = input(2);
+     tline = fgetl(fid);
+     i=i+1;
+    end
+        value = [];
+    if(states.size()==0)
+        found = 0;
+    else
+        found = 1;
+    end
+    if(found == 1)
+        has = 0;
+        for iter = 1:states.size()
+            state = states(iter);
+               if(board == state)
+                    value = values(iter);
+                    has =1;
+                    break;
+               end
+        end
+        if(has == 0)
+            value = zeros(board.size());
+            state = board;
+        end
+    else
+        value = zeros(board.size());
+        state = board;
+    end
+    
+    for it=1:64
+        if not(state(it)==0)
+            value(it) = -1000;
+        end
+    end
+    
+    Q = value;
+    fid.fclose();
+end
+
+function board = qStep(board)
+LR = 0.1;
+DF = 0.9;
+  value = getQ(board);
+    
+    move = softmax(value);
+    
+    board(move) = 1;
+    reward = 0;
+    if(win(board) == 1)
+        reward = 1;
+    end
+    if(win(board) == -1)
+        reward = -1;
+    end
+    value(move) = value(move)+LR*(reward + DF*max(getQ(board)) - value(move));
+    
+    saveQ(state, value);
+end
+
+function s = siqmEl(value, it)
+    s = exp(value(it))/sumSigm(value);
+end
+
+function sm = sumSigm(value)
+sm = 0;
+   for i=1:value.size()
+       sm = sm + exp(value(i));
+   end
+end
+
+function mv = softmax(value)
+    res = rand;
+    for i=1:64
+        des = siqmEl(value, i);
+        if(res<des)
+            mv = i;
+            return;
+        else
+            res = res-des;
+        end
+    end
+end
+
+function [] = saveQ(state, value)
+fid = fopen( 'values.txt');
+    tline = fgetl(fid);
+    i =1;
+    while ischar(tline)
+    input = strsplit(tline, '#');
+     states{i} =input(1);
+     values{i} = input(2);
+     tline = fgetl(fid);
+     i=i+1;
+    end
+    
+    
+     if(states.size()==0)
+        found = 0;
+    else
+        found = 1;
+     end
+    it = -1;
+    if(found == 1)
+        has = 0;
+        for iter = 1:states.size()
+            stateIn = states(iter);
+               if(state == stateIn)
+                    has =1;
+                    it = iter;
+                    break;
+               end
+        end
+        if(has == 0)
+             fid.write(state);
+        fid.write('#');
+        fid.write(value);
+        fid.write('\n');
+        else
+        fid.clear;
+        states(it) = state;
+            for i=1:states.size()
+            fid.write(states(i));
+            fid.write('#');
+            fid.write(values(i));
+            fid.write('\n');
             end
         end
     end
-    board(move) = 1;
-end
-
-function board = playerMove(board) 
-    move = 1;
-    while (move >= 9 || move < 0 || board(move) ~= 0)
-        move = input('\nInput move ([0..8]): ');
-    end
-    board(move) = -1;
 end
 
