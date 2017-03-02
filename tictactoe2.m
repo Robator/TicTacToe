@@ -107,17 +107,18 @@ function Q = getQ(board)
         has = 0;
         for iter = 1:size(states)
             state = states(iter,:);
-% 			here may be an error
+% state is a cell and board is an array, so arrange to one type
+% here may be an error
                if(size(setdiff(board, cell2mat([state{:}])))~=[1 1])
                     value = values(iter);
                     has =1;
                     break;
                end
-        end
-        if(has == 0)
-            value = zeros(size(board));
-            state = board;
-        end
+		end
+	end
+	if has == 0
+		value = zeros(size(board));
+		state = board;
     else
         value = zeros(size(board));
         state = board;
@@ -191,7 +192,7 @@ fid = fopen( 'values.txt');
     end
     
     
-     if(states.size()==0)
+     if(size(states)==0)
         found = 0;
 	 else
         found = 1;
@@ -199,7 +200,7 @@ fid = fopen( 'values.txt');
     it = -1;
     if(found == 1)
         has = 0;
-        for iter = 1:states.size()
+        for iter = 1:size(states)
             stateIn = states(iter);
                if(state == stateIn)
                     has =1;
@@ -208,14 +209,14 @@ fid = fopen( 'values.txt');
                end
         end
         if(has == 0)
-             fid.write(state);
-        fid.write('#');
-        fid.write(value);
-        fid.write('\n');
-        else
-        fid.clear;
-        states(it) = state;
-            for i=1:states.size()
+            fid.write(state);
+			fid.write('#');
+			fid.write(value);
+			fid.write('\n');
+		else
+			fid.clear;
+			states(it) = state;
+			for i=1:size(states)
             fid.write(states(i));
             fid.write('#');
             fid.write(values(i));
