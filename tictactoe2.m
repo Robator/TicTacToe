@@ -1,17 +1,3 @@
-% function [] = tictactoe2()
-%     is_x = 1; % keeps track of the current player
-%     global state
-%     state = zeros(4,4,4)
-%     minimax
-%          
-% end
-% function [] = minimax(level,player)
-%     global state
-%     for i=1:4
-%         for j=1:4
-%             for k=1:4
-%                 if state(i,j,1)==0
-
 function [] = tictactoe2()
     board = zeros(64);
     player=2;
@@ -20,7 +6,6 @@ function [] = tictactoe2()
             if rem(turn+player, 2) == 0
                 qStep(board);
             else 
-               
                 playerMove(board);
             end
         end
@@ -99,41 +84,42 @@ function board = playerMove(board)
     board(move) = -1;
 end
 
-function Q = getQ(state)
+function Q = getQ(board)
  fid = fopen( 'values.txt');
     tline = fgetl(fid);
     i =1;
     states = cell(0);
     values = cell(0);
     while ischar(tline)
-    input = strsplit(tline, '#');
-     states{i} =input(1);
-     values{i} = input(2);
-     tline = fgetl(fid);
-     i=i+1;
+        input = strsplit(tline, '#');
+         states{i} =input(1);
+         values{i} = input(2);
+         tline = fgetl(fid);
+         i=i+1;
     end
         value = [];
-    if(states.size()==0)
+    if(size(states)==0)
         found = 0;
     else
         found = 1;
     end
     if(found == 1)
         has = 0;
-        for iter = 1:states.size()
-            state = states(iter);
-               if(board == state)
+        for iter = 1:size(states)
+            state = states(iter,:);
+% 			here may be an error
+               if(size(setdiff(board, cell2mat([state{:}])))~=[1 1])
                     value = values(iter);
                     has =1;
                     break;
                end
         end
         if(has == 0)
-            value = zeros(board.size());
+            value = zeros(size(board));
             state = board;
         end
     else
-        value = zeros(board.size());
+        value = zeros(size(board));
         state = board;
     end
     
@@ -144,12 +130,13 @@ function Q = getQ(state)
     end
     
     Q = value;
-    fid.fclose();
+    fclose(fid);
 end
 
 function board = qStep(board)
 LR = 0.1;
 DF = 0.9;
+% value is 64x64
   value = getQ(board);
     
     move = softmax(value);
@@ -162,8 +149,8 @@ DF = 0.9;
     if(win(board) == -1)
         reward = -1;
     end
-    value(move) = value(move)+LR*(reward + DF*max(getQ(board)) - value(move));
-    
+    value(move,:) = value(move)+LR*(reward + DF*max(getQ(board))) - value(move);
+%     here is an error. undefined var STATE
     saveQ(state, value);
 end
 
@@ -173,7 +160,7 @@ end
 
 function sm = sumSigm(value)
 sm = 0;
-   for i=1:value.size()
+   for i=1:size(value)
        sm = sm + exp(value(i));
    end
 end
@@ -196,17 +183,17 @@ fid = fopen( 'values.txt');
     tline = fgetl(fid);
     i =1;
     while ischar(tline)
-    input = strsplit(tline, '#');
-     states{i} =input(1);
-     values{i} = input(2);
-     tline = fgetl(fid);
-     i=i+1;
+        input = strsplit(tline, '#');
+        states{i} =input(1);
+        values{i} = input(2);
+        tline = fgetl(fid);
+        i=i+1;
     end
     
     
      if(states.size()==0)
         found = 0;
-    else
+	 else
         found = 1;
      end
     it = -1;
