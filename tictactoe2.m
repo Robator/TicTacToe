@@ -1,4 +1,4 @@
-function [] = tictactoe2()
+function [] = tictactoe()
     board = zeros(64);
     player=2;
     for turn=1:64
@@ -107,18 +107,17 @@ function Q = getQ(board)
         has = 0;
         for iter = 1:size(states)
             state = states(iter,:);
-% state is a cell and board is an array, so arrange to one type
-% here may be an error
+% 			here may be an error
                if(size(setdiff(board, cell2mat([state{:}])))~=[1 1])
                     value = values(iter);
                     has =1;
                     break;
                end
-		end
-	end
-	if has == 0
-		value = zeros(size(board));
-		state = board;
+        end
+        if(has == 0)
+            value = zeros(size(board));
+            state = board;
+        end
     else
         value = zeros(size(board));
         state = board;
@@ -152,7 +151,7 @@ DF = 0.9;
     end
     value(move,:) = value(move)+LR*(reward + DF*max(getQ(board))) - value(move);
 %     here is an error. undefined var STATE
-    saveQ(state, value);
+    saveQ(board, value);
 end
 
 function s = siqmEl(value, it)
@@ -183,6 +182,8 @@ function [] = saveQ(state, value)
 fid = fopen( 'values.txt');
     tline = fgetl(fid);
     i =1;
+     states = cell(0);
+    values = cell(0);
     while ischar(tline)
         input = strsplit(tline, '#');
         states{i} =input(1);
@@ -200,7 +201,7 @@ fid = fopen( 'values.txt');
     it = -1;
     if(found == 1)
         has = 0;
-        for iter = 1:size(states)
+        for iter = 1:states.size()
             stateIn = states(iter);
                if(state == stateIn)
                     has =1;
@@ -209,14 +210,14 @@ fid = fopen( 'values.txt');
                end
         end
         if(has == 0)
-            fid.write(state);
-			fid.write('#');
-			fid.write(value);
-			fid.write('\n');
-		else
-			fid.clear;
-			states(it) = state;
-			for i=1:size(states)
+             fid.write(state);
+        fid.write('#');
+        fid.write(value);
+        fid.write('\n');
+        else
+        fid.clear;
+        states(it) = state;
+            for i=1:states.size()
             fid.write(states(i));
             fid.write('#');
             fid.write(values(i));
@@ -225,4 +226,3 @@ fid = fopen( 'values.txt');
         end
     end
 end
-
