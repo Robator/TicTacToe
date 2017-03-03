@@ -1,4 +1,4 @@
-function [] = tictactoe()
+function [] = tictactoe2()
     board = zeros(64);
     player=2;
     for turn=1:64
@@ -121,7 +121,7 @@ function Q = getQ(board)
     else
         value = zeros(size(board));
         state = board;
-    end
+	end
     
     for it=1:64
         if not(state(it)==0)
@@ -151,7 +151,7 @@ DF = 0.9;
     end
     value(move,:) = value(move)+LR*(reward + DF*max(getQ(board))) - value(move);
 %     here is an error. undefined var STATE
-    saveQ(board, value);
+    saveQ(board, value);	
 end
 
 function s = siqmEl(value, it)
@@ -201,27 +201,29 @@ fid = fopen( 'values.txt');
     it = -1;
     if(found == 1)
         has = 0;
-        for iter = 1:states.size()
+        for iter = 1:size(states)
             stateIn = states(iter);
-               if(state == stateIn)
+% different dimensions of state and stateIn
+% state is text
+               if(size(setdiff(state, cell2mat([stateIn{:}])))==[1 0])
                     has =1;
                     it = iter;
                     break;
                end
         end
         if(has == 0)
-             fid.write(state);
-        fid.write('#');
-        fid.write(value);
-        fid.write('\n');
+            fid.write(state);
+			fid.write('#');
+			fid.write(value);
+			fid.write('\n');
         else
-        fid.clear;
-        states(it) = state;
-            for i=1:states.size()
-            fid.write(states(i));
-            fid.write('#');
-            fid.write(values(i));
-            fid.write('\n');
+			fid.clear;
+			states(it) = state;
+            for i=1:size(states)
+				fid.write(states(i));
+				fid.write('#');
+				fid.write(values(i));
+				fid.write('\n');
             end
         end
     end
