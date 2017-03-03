@@ -20,7 +20,11 @@ summa = 0;
     for turn=1:9
         if win(board) == 0
             if rem(turn+player, 2) == 0
-                board = computerMove(board);
+				if turn==1
+					board(1)=1;
+				else
+					board = computerMove(board);
+				end
             else 
                 draw(board);
                 board = playerMove(board);
@@ -112,7 +116,7 @@ function board = computerMove(board)
         if(board(i) == 0) 
             board(i) = 1;
             tempScore = -minimax(board, -1);
-%             disp(summa)
+            disp(tempScore)
             board(i) = 0;
             if(tempScore > score) 
                 score = tempScore;
@@ -126,7 +130,7 @@ end
 function board = playerMove(board) 
     move = -1;
     global summa
-    disp(summa)
+%     disp(summa)
     while move > 9 || move <= 0 || board(move) ~= 0
         move = input('\nInput move ([1..8]): ')
     end
