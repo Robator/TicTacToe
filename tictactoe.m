@@ -1,4 +1,5 @@
 function [] = tictactoe()
+
     board = zeros(64);
     player=2;
     for turn=1:64
@@ -6,8 +7,7 @@ function [] = tictactoe()
             if rem(turn+player, 2) == 0
                 qStep(board);
             else 
-                playerMove(board);
-                
+                playerMove(board); 
             end
         end
     end
@@ -81,6 +81,7 @@ function board = playerMove(board)
     while move >= 64 || move < 0 || board(move) ~= 0
         moveVec = input('\nInput move ([1..4, 1..4, 1..4]): ');
         move = moveVec(1)+(moveVec(2)-1)*4-1 +(moveVec(3)-1)*16-1;
+        disp(move);
         if(board(move)==0)
             board(move) = -1;
         else
@@ -140,13 +141,6 @@ function Q = getQ(board)
     fclose(fid);
 end
 
-function [i, j, k] = mtoV(mv) 
-    k = ceil((mv)/16);
-    mv = mv - 16*(k-1);
-    j = ceil(mv/4);
-    mv = mv - 4*(j-1);
-    i = mv;
-end
 
 function board = qStep(board)
 LR = 0.1;
@@ -168,6 +162,7 @@ DF = 0.9;
         reward = -1;
     end
     value(move,:) = value(move)+LR*(reward + DF*max(getQ(board))) - value(move);
+    disp(mtoV(move));
     saveQ(board, value);
 end
 
@@ -242,4 +237,14 @@ fid = fopen( 'values.txt');
             end
         end
     end
+end
+
+
+function res = mtoV(mv) 
+    k = ceil((mv)/16);
+    mv = mv - 16*(k-1);
+    j = ceil(mv/4);
+    mv = mv - 4*(j-1);
+    i = mv;
+    res = [i j k];
 end
