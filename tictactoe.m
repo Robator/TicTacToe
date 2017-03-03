@@ -5,9 +5,9 @@ function [] = tictactoe()
     for turn=1:64
         if win(board) == 0
             if rem(turn+player, 2) == 0
-                qStep(board);
+                (qStep(board));
             else 
-                playerMove(board); 
+                (playerMove(board)); 
             end
         end
     end
@@ -80,10 +80,11 @@ function board = playerMove(board)
     move = -1;
     while move >= 64 || move < 0 || board(move) ~= 0
         moveVec = input('\nInput move ([1..4, 1..4, 1..4]): ');
-        move = moveVec(1)+(moveVec(2)-1)*4-1 +(moveVec(3)-1)*16-1;
+        move = moveVec(1)+(moveVec(2)-1)*4 +(moveVec(3)-1)*16;
         disp(move);
         if(board(move)==0)
             board(move) = -1;
+            return;
         else
             disp('cell is full, try again')
             move = -1;
@@ -143,6 +144,7 @@ end
 
 
 function board = qStep(board)
+disp('pc move started');
 LR = 0.1;
 DF = 0.9;
 % value is 64x64
