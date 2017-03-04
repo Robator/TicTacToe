@@ -6,7 +6,8 @@ function [] = tictactoe3()
         if win(board) == 0
             if rem(turn+player, 2) == 0
                 board = (computerMove(board));
-            else 
+			else 
+				draw(board);
                 board = (playerMove(board)); 
             end
         end
@@ -117,6 +118,30 @@ function board = playerMove(board)
         end
     end
     board(move) = -1;
+end
+
+function draw( b)
+	for i=1:16:48
+        fprintf(' %c | %c | %c | %c\n',gridChar(b(i)),gridChar(b(i+1)),gridChar(b(i+2)),gridChar(b(i+3)));
+        disp('---+---+----+-----\n');
+        fprintf(' %c | %c | %c | %c\n',gridChar(b(i+4)),gridChar(b(i+5)),gridChar(b(i+6)),gridChar(b(i+7)));
+        disp('---+---+----+-----\n');
+        fprintf(' %c | %c | %c | %c\n',gridChar(b(i+8)),gridChar(b(i+9)),gridChar(b(i+10)),gridChar(b(i+11)));
+		disp('---+---+----+-----\n');
+        fprintf(' %c | %c | %c | %c\n',gridChar(b(i+12)),gridChar(b(i+13)),gridChar(b(i+14)),gridChar(b(i+15)));
+        disp('\n')
+	end
+end
+
+function c = gridChar(i) 
+    switch i 
+        case -1 
+            c='X';
+        case 0
+            c=' ';
+        case 1
+            c='O';
+    end
 end
 
 function Q = getQ(board)
