@@ -1,27 +1,15 @@
-% function [] = tictactoe2()
-%     is_x = 1; % keeps track of the current player
-%     global state
-%     state = zeros(4,4,4)
-%     minimax
-%          
-% end
-% function [] = minimax(level,player)
-%     global state
-%     for i=1:4
-%         for j=1:4
-%             for k=1:4
-%                 if state(i,j,1)==0
-
 function tictactoe2()
 global summa
 summa = 0;
     board = [0,0,0,0,0,0,0,0,0];
     player=1;
     for turn=1:9
-        if win(board) == 0		%if there is no winner or not a draw
-            if rem(turn+player, 2) == 0		%reminder
+		%if there is no winner or not a draw
+        if win(board) == 0		
+            if rem(turn+player, 2) == 0	%reminder
 				if turn==1
-					board(1)=1;		%computer`s first move to 0 cell
+					%computer`s first move to 0 cell
+					board(1)=1;		
 				else
 					board = computerMove(board);
 				end
@@ -116,7 +104,6 @@ end
 
 function board = computerMove(board) 
     move = -1;
-    global summa;%just iteration counter for tests
     score = -2;
     for i=1:9
         if(board(i) == 0) 
@@ -130,15 +117,14 @@ function board = computerMove(board)
             end
         end
 	end
-    board(move) = 1;%make a move that has the maximum score
+	%make a move that has the maximum score
+    board(move) = 1;
 end
 
 function board = playerMove(board) 
     move = 0;
-    global summa
-%     disp(summa)
     while move > 9 || move <= 0 || board(move) ~= 0
-        move = input('\nInput move ([1..8]): ')
+        move = input('\nInput move ([1..9]): ')
     end
     board(move) = -1;
 end
