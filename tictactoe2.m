@@ -1,12 +1,13 @@
 function [] = tictactoe2()
-    board = zeros(64);
+
+    board = zeros(1, 64);
     player=2;
     for turn=1:64
         if win(board) == 0
             if rem(turn+player, 2) == 0
-                qStep(board);
+                board = (qStep(board, 1));
             else 
-                playerMove(board);
+                board = (qStep(board, -1)); 
             end
         end
     end
@@ -79,22 +80,37 @@ function board = playerMove(board)
     move = -1;
     while move >= 64 || move < 0 || board(move) ~= 0
         moveVec = input('\nInput move ([1..4, 1..4, 1..4]): ');
-        move = moveVec(1)+(moveVec(2)-1)*4-1 +(moveVec(3)-1)*16-1; 
+        move = moveVec(1)+(moveVec(2)-1)*4 +(moveVec(3)-1)*16;
+        disp(move);
+        if(board(move)==0)
+            disp(board(move));
+            board(move) = -1;
+            disp(board(move));
+            return;
+        else
+            disp('cell is full, try again')
+            move = -1;
+        end
     end
     board(move) = -1;
 end
 
 function Q = getQ(board)
- fid = fopen( 'values.txt');
-    tline = fgetl(fid);
+ fid = fopen( 'values.txt', 'r');
+ sid = fopen( 'states.txt', 'a+');
+    
     i =1;
     states = cell(0);
     values = cell(0);
-    while ischar(tline)
-        input = strsplit(tline, '#');
-         states{i} =input(1);
-         values{i} = input(2);
-         tline = fgetl(fid);
+    vline = fgetl(fid);
+    sline = fgetl(sid);
+    while ischar(vline)
+         Qline = (vline);
+         Stline = (sline);
+         states{i} =Stline;
+         values{i} = Qline;
+         vline = fgetl(fid);
+         sline = fgetl(sid);
          i=i+1;
     end
         value = [];
@@ -108,7 +124,7 @@ function Q = getQ(board)
         for iter = 1:size(states)
             state = states(iter,:);
 % 			here may be an error
-               if(size(setdiff(board, cell2mat([state{:}])))~=[1 1])
+               if(board ==cell2mat(states(iter)))
                     value = values(iter);
                     has =1;
                     break;
@@ -121,7 +137,7 @@ function Q = getQ(board)
     else
         value = zeros(size(board));
         state = board;
-	end
+    end
     
     for it=1:64
         if not(state(it)==0)
@@ -131,27 +147,40 @@ function Q = getQ(board)
     
     Q = value;
     fclose(fid);
+    fclose(sid);
 end
 
-function board = qStep(board)
+
+function board = qStep(board, player)
+disp('pc move started');
 LR = 0.1;
 DF = 0.9;
 % value is 64x64
   value = getQ(board);
     
+  
+  while(true)
     move = softmax(value);
+        if(board(move)==0)      
+            board(move) = -1;
+            break
+        else
+            disp('cell is full, try again')
+        end
+   %move = moveVec(1)+(moveVec(2)-1)*4-1 +(moveVec(3)-1)*16-1;
+  end
     
-    board(move) = 1;
+    board(move) = player;
     reward = 0;
-    if(win(board) == 1)
+    if(win(board) == player)
         reward = 1;
     end
-    if(win(board) == -1)
+    if(win(board) == -player)
         reward = -1;
     end
     value(move,:) = value(move)+LR*(reward + DF*max(getQ(board))) - value(move);
-%     here is an error. undefined var STATE
-    saveQ(board, value);	
+    disp(mtoV(move));
+    saveQ(board, value);
 end
 
 function s = siqmEl(value, it)
@@ -167,6 +196,7 @@ end
 
 function mv = softmax(value)
     res = rand;
+    mv = 1+round(rand*63);
     for i=1:64
         des = siqmEl(value, i);
         if(res<des)
@@ -176,20 +206,26 @@ function mv = softmax(value)
             res = res-des;
         end
     end
+    
 end
 
-function [] = saveQ(state, value)
-fid = fopen( 'values.txt');
-    tline = fgetl(fid);
+function [] = saveQ(board, value)
+ fid = fopen( 'values.txt', 'a+');
+ sid = fopen( 'states.txt', 'a+');
+    
     i =1;
-     states = cell(0);
+    states = cell(0);
     values = cell(0);
-    while ischar(tline)
-        input = strsplit(tline, '#');
-        states{i} =input(1);
-        values{i} = input(2);
-        tline = fgetl(fid);
-        i=i+1;
+    vline = fgetl(fid);
+    sline = fgetl(sid);
+    while ischar(vline)
+         Qline = cell2mat(vline);
+         Stline = cell2mat(sline);
+         states{i} =Qline;
+         values{i} = Stline;
+         vline = fgetl(fid);
+         sline = fgetl(sid);
+         i=i+1;
     end
     
     
@@ -201,30 +237,46 @@ fid = fopen( 'values.txt');
     it = -1;
     if(found == 1)
         has = 0;
-        for iter = 1:size(states)
+        for iter = 1:states.size()
             stateIn = states(iter);
-% different dimensions of state and stateIn
-% state is text
-               if(size(setdiff(state, cell2mat([stateIn{:}])))==[1 0])
+               if(board == stateIn)
                     has =1;
                     it = iter;
                     break;
                end
         end
         if(has == 0)
-            fid.write(state);
-			fid.write('#');
-			fid.write(value);
-			fid.write('\n');
+        fprintf(sid, '%d ', board);
+        fprintf(sid, '\n');
+        fprintf(fid, '%f ', value);
+        fprintf(fid, '\n');
         else
-			fid.clear;
-			states(it) = state;
-            for i=1:size(states)
-				fid.write(states(i));
-				fid.write('#');
-				fid.write(values(i));
-				fid.write('\n');
+        fid.clear;
+        states(it) = state;
+        values(it) = value;
+            for i=1:states.size()
+             fprintf(sid, '%d ', cell2mat(states(it)));
+             fprintf(sid, '\n');
+             fprintf(fid, '%f ', cell2mat(values(it)));
+             fprintf(fid, '\n');
             end
         end
+    else
+        fprintf(sid, '%d ', board);
+        fprintf(sid, '\n');
+        fprintf(fid, '%f ', value);
+        fprintf(fid, '\n');
     end
+    fclose(fid);
+    fclose(sid);
+end
+
+
+function res = mtoV(mv) 
+    k = ceil((mv)/16);
+    mv = mv - 16*(k-1);
+    j = ceil(mv/4);
+    mv = mv - 4*(j-1);
+    i = mv;
+    res = [i j k];
 end
