@@ -1,13 +1,13 @@
 function [] = tictactoe()
 
-    board = zeros(64);
+    board = zeros(1, 64);
     player=2;
     for turn=1:64
         if win(board) == 0
             if rem(turn+player, 2) == 0
-                (qStep(board));
+                board = (qStep(board));
             else 
-                (playerMove(board)); 
+                board = (playerMove(board)); 
             end
         end
     end
@@ -83,7 +83,9 @@ function board = playerMove(board)
         move = moveVec(1)+(moveVec(2)-1)*4 +(moveVec(3)-1)*16;
         disp(move);
         if(board(move)==0)
+            disp(board(move));
             board(move) = -1;
+            disp(board(move));
             return;
         else
             disp('cell is full, try again')
@@ -94,16 +96,21 @@ function board = playerMove(board)
 end
 
 function Q = getQ(board)
- fid = fopen( 'values.txt');
-    tline = fgetl(fid);
+ fid = fopen( 'values.txt', 'r');
+ sid = fopen( 'states.txt', 'a+');
+    
     i =1;
     states = cell(0);
     values = cell(0);
-    while ischar(tline)
-        input = strsplit(tline, '#');
-         states{i} =input(1);
-         values{i} = input(2);
-         tline = fgetl(fid);
+    vline = fgetl(fid);
+    sline = fgetl(sid);
+    while ischar(vline)
+         Qline = (vline);
+         Stline = (sline);
+         states{i} =Stline;
+         values{i} = Qline;
+         vline = fgetl(fid);
+         sline = fgetl(sid);
          i=i+1;
     end
         value = [];
@@ -117,7 +124,12 @@ function Q = getQ(board)
         for iter = 1:size(states)
             state = states(iter,:);
 % 			here may be an error
-               if(size(setdiff(board, cell2mat([state{:}])))~=[1 1])
+                disp(cell2mat(states(iter)));
+                disp('newline \n');
+                disp(board);
+                disp('newline \n');
+                disp(size(board) +  ' ' + size(cell2mat(states(iter))));
+               if(board ==cell2mat(states(iter)))
                     value = values(iter);
                     has =1;
                     break;
@@ -181,6 +193,7 @@ end
 
 function mv = softmax(value)
     res = rand;
+    mv = round(rand*64);
     for i=1:64
         des = siqmEl(value, i);
         if(res<des)
@@ -190,20 +203,26 @@ function mv = softmax(value)
             res = res-des;
         end
     end
+    
 end
 
-function [] = saveQ(state, value)
-fid = fopen( 'values.txt');
-    tline = fgetl(fid);
+function [] = saveQ(board, value)
+ fid = fopen( 'values.txt', 'a+');
+ sid = fopen( 'states.txt', 'a+');
+    
     i =1;
-     states = cell(0);
+    states = cell(0);
     values = cell(0);
-    while ischar(tline)
-        input = strsplit(tline, '#');
-        states{i} =input(1);
-        values{i} = input(2);
-        tline = fgetl(fid);
-        i=i+1;
+    vline = fgetl(fid);
+    sline = fgetl(sid);
+    while ischar(vline)
+         Qline = cell2mat(vline);
+         Stline = cell2mat(sline);
+         states{i} =Qline;
+         values{i} = Stline;
+         vline = fgetl(fid);
+         sline = fgetl(sid);
+         i=i+1;
     end
     
     
@@ -217,27 +236,33 @@ fid = fopen( 'values.txt');
         has = 0;
         for iter = 1:states.size()
             stateIn = states(iter);
-               if(state == stateIn)
+               if(board == stateIn)
                     has =1;
                     it = iter;
                     break;
                end
         end
         if(has == 0)
-             fid.write(state);
-        fid.write('#');
-        fid.write(value);
-        fid.write('\n');
+        fprintf(sid, '%d ', board);
+        fprintf(sid, '\n');
+        fprintf(fid, '%f ', value);
+        fprintf(fid, '\n');
         else
         fid.clear;
         states(it) = state;
+        values(it) = value;
             for i=1:states.size()
-            fid.write(states(i));
-            fid.write('#');
-            fid.write(values(i));
-            fid.write('\n');
+             fprintf(sid, '%d ', cell2mat(states(it)));
+             fprintf(sid, '\n');
+             fprintf(fid, '%f ', cell2mat(values(it)));
+             fprintf(fid, '\n');
             end
         end
+    else
+        fprintf(sid, '%d ', board);
+        fprintf(sid, '\n');
+        fprintf(fid, '%f ', value);
+        fprintf(fid, '\n');
     end
 end
 
