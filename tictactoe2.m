@@ -78,14 +78,12 @@ end
 
 function draw( b)
 	for i=1:16:48
-        fprintf(' %c | %c | %c | %c\n',gridChar(b(i)),gridChar(b(i+1)),gridChar(b(i+2)),gridChar(b(i+3)));
-        disp('---+---+----+-----\n');
-        fprintf(' %c | %c | %c | %c\n',gridChar(b(i+4)),gridChar(b(i+5)),gridChar(b(i+6)),gridChar(b(i+7)));
-        disp('---+---+----+-----\n');
-        fprintf(' %c | %c | %c | %c\n',gridChar(b(i+8)),gridChar(b(i+9)),gridChar(b(i+10)),gridChar(b(i+11)));
+		for j=1:4:15
+        fprintf(' %s | %c | %c | %c\n',gridChar(b(i+j-1)),gridChar(b(i+j)),gridChar(b(i+j+1)),gridChar(b(i+j+2)));
 		disp('---+---+----+-----\n');
-        fprintf(' %c | %c | %c | %c\n',gridChar(b(i+12)),gridChar(b(i+13)),gridChar(b(i+14)),gridChar(b(i+15)));
-        disp('\n')
+		end
+		
+		disp('\n')
 	end
 end
 
@@ -106,6 +104,10 @@ function a = minimax(board, player)
             board(i) = player;%try the move
             
             thisScore = -minimax(board, player*(-1));
+			fprintf('sum:%d\n', summa);
+			if score == 1
+				break
+			end
             if(thisScore > score) 
                 score = thisScore;
                 move = i;
@@ -116,14 +118,14 @@ function a = minimax(board, player)
     if(move == -1) %the bottom of the tree returns 0
         a = 0;
         return
-    end
+	end
     a = score;
 end
 
 function board = computerMove(board) 
     move = -1;
     score = -2;
-    for i=1:64
+    for i=1:2
         if(board(i) == 0) 
             board(i) = 1;
             tempScore = -minimax(board, -1);
@@ -131,7 +133,11 @@ function board = computerMove(board)
             if(tempScore > score) 
                 score = tempScore;
                 move = i;
-            end
+			end
+% 			fprintf('%d(%d) ', score, i);
+			if rem(i,4)==0
+				fprintf('\n');
+			end
         end
 	end
 	%make a move that has the maximum score
@@ -145,9 +151,9 @@ function board = playerMove(board)
 		move = moveVec(1)+(moveVec(2)-1)*4 +(moveVec(3)-1)*16;
 		disp(move);
         if(board(move)==0)
-            disp(board(move));
+%             disp(board(move));
             board(move) = -1;
-            disp(board(move));
+%             disp(board(move));
             return;
         else
             disp('cell is full, try again')
