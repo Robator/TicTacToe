@@ -106,7 +106,7 @@ function Q = getQ(board)
     sline = fgetl(sid);
     while ischar(vline)
          Qline = (vline);
-         Stline = (sline);
+         Stline = str2num(sline);
          states{i} =Stline;
          values{i} = Qline;
          vline = fgetl(fid);
@@ -122,7 +122,8 @@ function Q = getQ(board)
     if(found == 1)
         has = 0;
         for iter = 1:size(states)
-            state = states(iter,:);
+			state=cell2mat(states(iter,:));
+%             state = states(iter,:);
 % 			here may be an error
                if(board ==cell2mat(states(iter)))
                     value = values(iter);
@@ -137,10 +138,11 @@ function Q = getQ(board)
     else
         value = zeros(size(board));
         state = board;
-    end
-    
+	end
+	
     for it=1:64
         if not(state(it)==0)
+			value=cell2mat(value);
             value(it) = -1000;
         end
     end
