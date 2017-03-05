@@ -148,7 +148,7 @@ function res = mtoV(mv)
     j = ceil(mv/4);
     mv = mv - 4*(j-1);
     i = mv;
-    res = [i j k];
+    res = [i j k]';
 end
 
 
