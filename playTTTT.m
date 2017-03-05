@@ -1,5 +1,5 @@
 
-function move = playTTT(board, player)
+function move = playTTTT(board, player)
 %Tictactoe 3D game is based on minimax algorithm with some improvements
 
 	%transform matrix to an array - easier to implement
