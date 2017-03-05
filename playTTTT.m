@@ -18,7 +18,7 @@ function move = playTTTT(board, player)
 	%players encoded for minimax
     if player==1 
         plr = -1;
-	elif player==2
+	elseif player==2
         plr = 1;
 	else
 		disp('Wrong player');
@@ -39,11 +39,9 @@ function move = playTTTT(board, player)
 			end
 			if score == 1 %cant play better
 				break
-            end
-			
+			end
 		end
-		
-    end
+	end
     move = mtoV(move);
 	%make a move that has the maximum score
     %board(move) = plr;
@@ -54,7 +52,6 @@ switch win(board)
         case 0
 			draw(board);
             disp('A draw. How droll.\n');
-			
         case 1
             draw(board);
             disp('X win.\n');
