@@ -77,9 +77,9 @@ function win = win(board) %win combinations
 end
 
 function draw( b)
-	for i=1:16:48
-		for j=1:4:15
-        fprintf(' %s | %c | %c | %c\n',gridChar(b(i+j-1)),gridChar(b(i+j)),gridChar(b(i+j+1)),gridChar(b(i+j+2)));
+	for i=0:16:49
+		for j=0:4:15
+        fprintf(' %c | %c | %c | %c\n',gridChar(b(i+j+1)),gridChar(b(i+j+2)),gridChar(b(i+j+3)),gridChar(b(i+j+4)));
 		disp('---+---+----+-----\n');
 		end
 		
@@ -87,35 +87,40 @@ function draw( b)
 	end
 end
 
-function a = minimax(board, player) 
+function a = minimax(board, depth, player) 
 	global summa
 	%How is the position like for player (their turn) on board?
     winner = win(board);
-    if(winner ~= 0) 
+    if(winner ~= 0) %someone has won
         a = winner*player;
 		return
-    end
-
+	end
+	if depth == 0
+		a=0;
+		return
+	end
     move = -1;
     score = -2;%Losing moves are preferred to no move
-    for i=1:5%For all moves,
+    for i=1:64%For all moves,
         summa=summa+1;
         if(board(i) == 0)%if empty
             board(i) = player;%try the move
-            
-            thisScore = -minimax(board, player*(-1));
-			fprintf('sum:%d\n', summa);
-			if score == 1
+			thisScore = -minimax(board, depth-1, player*(-1));
+			if score == 1 && player==-1 || score == -1 && player==1%cant play better
 				break
 			end
+% 			fprintf('sum:%d\n', summa);
+% 			fprintf('d:%d\n', depth);
             if(thisScore > score) 
                 score = thisScore;
                 move = i;
-            end
+			end
+% 			fprintf('%d(%d)\n',thisScore,i);
             board(i) = 0;%Reset board after try
+
         end
     end
-    if(move == -1) %the bottom of the tree returns 0
+    if move == -1 %all cells are full
         a = 0;
         return
 	end
@@ -125,20 +130,26 @@ end
 function board = computerMove(board) 
     move = -1;
     score = -2;
-    for i=1:2
+	depth = 3;
+    for i=1:64
         if(board(i) == 0) 
             board(i) = 1;
-            tempScore = -minimax(board, -1);
+            tempScore = -minimax(board, depth, -1);
             board(i) = 0;
             if(tempScore > score) 
                 score = tempScore;
                 move = i;
 			end
+			if score == 1 %cant play better
+				break
+			end
 % 			fprintf('%d(%d) ', score, i);
 			if rem(i,4)==0
 				fprintf('\n');
 			end
-        end
+		end
+		global summa;
+		fprintf('%d ', summa);
 	end
 	%make a move that has the maximum score
     board(move) = 1;
