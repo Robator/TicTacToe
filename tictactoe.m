@@ -22,6 +22,12 @@ function tictactoe()
 end
 
 function move = playTTT(board, player)
+       if (sum(board)==0)
+           move = round(rand*63)+1;
+           move = mtoV(move);
+           return;
+       end
+
     if player==1
         plr = -1;
     else
@@ -48,7 +54,8 @@ function move = playTTT(board, player)
 			end
 		end
 		
-	end
+    end
+    move = mtoV(move);
 	%make a move that has the maximum score
     %board(move) = plr;
 end
