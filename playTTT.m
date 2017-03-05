@@ -1,25 +1,38 @@
 
 function move = playTTT(board, player)
-board = arrToBoard(board);%turn matrix to array - easier to work
-       if (sum(board)==0)%if empty - give random move
-           move = round(rand*63)+1;
-           move = mtoV(move);
-           return;
-       end
+%Tictactoe 3D game is based on minimax algorithm with some improvements
 
-    if player==1 %players encoded for minimax
-        plr = -1;
-    else
-        plr = 1;
-    end
-    move = -1;%init
+	%transform matrix to an array - easier to implement
+	board = arrToBoard(board);
+	move = -1;%init
     score = -2;
 	depth = 3;
-    for i=1:64%make minimax
-        if(board(i) == 0) %for empty cells
-            board(i) = player;%imagine you came here
+	
+	%if empty - give random move
+	if (sum(board)==0)
+	   move = round(rand*63)+1;
+	   move = mtoV(move);
+	   return;
+	end
+
+	%players encoded for minimax
+    if player==1 
+        plr = -1;
+	elif player==2
+        plr = 1;
+	else
+		disp('Wrong player');
+		return		
+	end
+	
+	%make minimax for all cells
+    for i=1:64
+		%for empty cells try
+        if(board(i) == 0) 
+			%try the first empty cell
+            board(i) = player;
             tempScore = -minimax(board, depth, plr);
-            board(i) = 0;%unimagine
+            board(i) = 0;%reset cell
             if(tempScore > score) 
                 score = tempScore;
                 move = i;
@@ -52,6 +65,7 @@ switch win(board)
 end
 
 function c = gridChar(i) 
+%transforms number to X or O
     switch i 
         case 1 
             c='X';
@@ -90,6 +104,7 @@ function win = win(board) %win combinations
 end
 
 function draw( b)
+%draws board
 	for i=0:16:49
 		for j=0:4:15
         fprintf(' %c | %c | %c | %c\n',gridChar(b(i+j+1)),gridChar(b(i+j+2)),gridChar(b(i+j+3)),gridChar(b(i+j+4)));
@@ -119,10 +134,10 @@ function a = minimax(board, depth, player)
     move = -1;
     score = -2;%Losing moves are preferred to no move
     for i=1:64%For all moves,
-       
         if(board(i) == 0)%if empty
             board(i) = plr;%try the move
 			thisScore = -minimax(board, depth-1, player*(-1));
+			
 			if score == 1 && player==-1 || score == -1 && player==1%cant play better
 				break
 			end
@@ -148,16 +163,14 @@ function res = mtoV(mv)
     j = ceil(mv/4);
     mv = mv - 4*(j-1);
     i = mv;
-    res = [i j k];
+    res = [i j k]';
 end
 
-
-
-function board = arrToBoard(boardArr)
-    board=[]
+function boardArr = arrToBoard(board)
+    boardArr=[];
     for i=1:4
         for j=1:4
-            board = cat(board, boardArr(i, j, :));
+            boardArr = cat(2, boardArr, board(j, :, i));
         end
     end
 end
