@@ -1,6 +1,5 @@
-function tictactoe2()
-global summa
-summa = 0;
+function tictactoe2_board()
+
 %     board = [0,0,0,0,0,0,0,0,0];
 	board = zeros(1, 64);
     player=1;
@@ -10,7 +9,9 @@ summa = 0;
             if rem(turn+player, 2) == 0	%reminder
 				if turn==1
 					%computer`s first move to 0 cell
-					board(1)=1;		
+                    moveVec = playTTT(board, 1);
+                    move = moveVec(1)+(moveVec(2)-1)*4 +(moveVec(3)-1)*16;
+					board(move) = -1;		
 				else
 					board = computerMove(board);
 				end
@@ -21,6 +22,43 @@ summa = 0;
 		end
 	end
     write_winner(board);
+end
+
+function move = playTTT(board, player)
+    if(sum(board)==0)%first move - random
+    move = round(1+(rand*63));
+    move = (mtoV(move));
+    disp(move);
+    return;
+    end
+    if(player==1)
+        plr = -1;
+    else
+        plr = 1;
+    end
+    
+     move = -1;
+    score = -2;
+    moves = [];
+    for i=1:64
+        if(board(i) == 0) 
+            board(i) = 1;
+            tempScore = -minimax(board, plr);
+%             disp(tempScore);
+            board(i) = 0;
+            if(tempScore > score) 
+                score = tempScore;
+                moves = [];
+                moves = [moves i];
+            else
+                moves = [moves i];
+            end
+        end
+	end
+	%make a move that has the maximum score
+    move = datasample(moves, 1);
+    move = (mtoV(move));
+    disp(move);
 end
 
 function write_winner(board)
@@ -88,7 +126,7 @@ function draw( b)
 end
 
 function a = minimax(board, depth, player) 
-	global summa
+
 	%How is the position like for player (their turn) on board?
     winner = win(board);
     if(winner ~= 0) %someone has won
@@ -102,7 +140,7 @@ function a = minimax(board, depth, player)
     move = -1;
     score = -2;%Losing moves are preferred to no move
     for i=1:64%For all moves,
-        summa=summa+1;
+       
         if(board(i) == 0)%if empty
             board(i) = player;%try the move
 			thisScore = -minimax(board, depth-1, player*(-1));
@@ -145,11 +183,10 @@ function board = computerMove(board)
 			end
 % 			fprintf('%d(%d) ', score, i);
 			if rem(i,4)==0
-% 				fprintf('\n');
+				fprintf('\n');
 			end
 		end
-		global summa;
-% 		fprintf('%d ', summa);
+		
 	end
 	%make a move that has the maximum score
     board(move) = 1;
@@ -163,7 +200,7 @@ function board = playerMove(board)
 		disp(move);
         if(board(move)==0)
 %             disp(board(move));
-            board(move) = -1;
+            board(move) = 1;
 %             disp(board(move));
             return;
         else
@@ -171,6 +208,14 @@ function board = playerMove(board)
             move = -1;
 		end
     end
-    board(move) = -1;
+    board(move) = 1;
 end
 
+function res = mtoV(mv) 
+    k = ceil((mv)/16);
+    mv = mv - 16*(k-1);
+    j = ceil(mv/4);
+    mv = mv - 4*(j-1);
+    i = mv;
+    res = [i j k];
+end
