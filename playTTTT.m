@@ -3,10 +3,10 @@ function move = playTTTT(board, player)
 %Tictactoe 3D game is based on minimax algorithm with some improvements
 
 	%transform matrix to an array - easier to implement
-	board = arrToBoard(board);
+	board = matrixToarray(board);
 	move = -1;%init
     score = -2;
-	depth = 3;
+	depth = 2;
 	
 	%if empty - give random move
 	if (sum(board)==0)
@@ -163,7 +163,7 @@ function res = mtoV(mv)
     res = [i j k]';
 end
 
-function boardArr = arrToBoard(board)
+function boardArr = matrixToarray(board)
     boardArr=[];
     for i=1:4
         for j=1:4
