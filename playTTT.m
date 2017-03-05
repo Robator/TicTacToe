@@ -145,11 +145,11 @@ function board = computerMove(board)
 			end
 % 			fprintf('%d(%d) ', score, i);
 			if rem(i,4)==0
-				fprintf('\n');
+% 				fprintf('\n');
 			end
 		end
 		global summa;
-		fprintf('%d ', summa);
+% 		fprintf('%d ', summa);
 	end
 	%make a move that has the maximum score
     board(move) = 1;
