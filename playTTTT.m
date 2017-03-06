@@ -204,7 +204,7 @@ function a = Ominimax(board, depth, player)
             board(i) = plr;%try the move
 			thisScore = -Ominimax(board, depth-1, player*(-1));
 			
-			if score == -1 && player==1 || score == 1 && player==-1%cant play better
+			if score == 1 && player==1 || score == -1 && player==-1%cant play better
 				break
 			end
 
