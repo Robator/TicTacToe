@@ -31,9 +31,9 @@ function move = playTTTT(board, player)
 			%try the first empty cell
             board(i) = player;
             if player==1
-            tempScore = -Xminimax(board, depth, plr);
+            tempScore = -minimax(board, depth, plr, 'X');
             else
-                tempScore = -Ominimax(board, depth, plr);
+                tempScore = -minimax(board, depth, plr, 'O');
             end
             board(i) = 0;%reset cell
             if(tempScore > score) 
@@ -64,7 +64,7 @@ function move = playTTTT(board, player)
     %board(move) = plr;
 end
 
-function a = Xminimax(board, depth, player) %crouch
+function a = minimax(board, depth, player, xo) %crouch
     if (player == -1)%transorm for filling board
         plr = 1;
     else
@@ -90,7 +90,8 @@ function a = Xminimax(board, depth, player) %crouch
     for i=1:64%For all moves,
         if(board(i) == 0)%if empty
             board(i) = plr;%try the move
-			thisScore = -Xminimax(board, depth-1, player*(-1));
+            if xo == 'X' %if initial player is X
+			thisScore = -Xminimax(board, depth-1, player*(-1), xo);
 			
 			if score == 1 && player==-1 || score == -1 && player==1%cant play better
 				break
@@ -100,44 +101,9 @@ function a = Xminimax(board, depth, player) %crouch
                 score = thisScore;
                 move = i;
             end
-            board(i) = 0;%Reset board after try
-
-        end
-    end
-    if move == -1 %all cells are full
-        a = 0;
-        return
-	end
-    a = score;
-end
-
-function a = Ominimax(board, depth, player) 
-    if (player == -1)%transorm for filling board
-        plr = 1;
-    else
-        plr = 2;
-    end
-	%How is the position like for player (their turn) on board?
-    winner = win(board);
-    if(winner ~= 0) %someone has won
-        if (winner == 1)
-            wnr = -1;
-        else
-            wnr = 1;
-        end
-        a = wnr*player;
-		return
-	end
-	if depth == 0%depth limit exceeded
-		a=0;
-		return
-	end
-    move = -1;
-    score = -2;%Losing moves are preferred to no move
-    for i=1:64%For all moves,
-        if(board(i) == 0)%if empty
-            board(i) = plr;%try the move
-			thisScore = -Ominimax(board, depth-1, player*(-1));
+            
+            else %if initial player is O
+            thisScore = -minimax(board, depth-1, player*(-1), xo);
 			
 			if score == 1 && player==1 || score == -1 && player==-1%cant play better
 				break
@@ -146,6 +112,8 @@ function a = Ominimax(board, depth, player)
             if(thisScore < score) %found better solution
                 score = thisScore;
                 move = i;
+            end
+            
             end
             board(i) = 0;%Reset board after try
 
@@ -157,6 +125,8 @@ function a = Ominimax(board, depth, player)
 	end
     a = score;
 end
+
+
 
 function res = mtoV(mv) 
     k = ceil((mv)/16);
