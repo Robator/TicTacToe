@@ -5,7 +5,7 @@ function move = playTTTT(board, player)
 	board = arrToBoard(board);
 	move = -1;%init
     score = -2;
-	depth = 2;
+	depth = 3;
 	
 	%if empty - give random move
 	if (sum(board)==0)
@@ -91,7 +91,7 @@ function a = minimax(board, depth, player, xo) %crouch
         if(board(i) == 0)%if empty
             board(i) = plr;%try the move
             if xo == 'X' %if initial player is X
-			thisScore = -Xminimax(board, depth-1, player*(-1), xo);
+			thisScore = -minimax(board, depth-1, player*(-1), xo);
 			
 			if score == 1 && player==-1 || score == -1 && player==1%cant play better
 				break

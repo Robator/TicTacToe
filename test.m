@@ -32,20 +32,18 @@ end
 function [winner] = write_winner(board)
 switch win(board) 
         case 0
-% 			draw(board);
 			winner=0;
 			if sum(board(:)==0)==0
 				winner=1;
-				disp('A draw. How droll.\n');
+				disp('A draw\n');
 			end
         case 1
 			winner=1;
-%             draw(board);
-            disp('X win.\n');
+            disp('X win\n');
         case 2
 			winner=2;
 % 			draw(board);
-            disp('O win. Inconceivable!\n');
+            disp('O win\n');
     end
 end
 
