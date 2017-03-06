@@ -58,24 +58,10 @@ function move = playTTTT(board, player)
         end
     else
     move = mtoV(move);
-    end
+	end
+	return
 	%make a move that has the maximum score
     %board(move) = plr;
-end
-
-function write_winner(board)
-switch win(board) 
-        case 0
-			draw(board);
-            disp('A draw. How droll.\n');
-			
-        case 1
-            draw(board);
-            disp('X win.\n');
-        case 2
-			draw(board);
-            disp('O win. Inconceivable!\n');
-    end
 end
 
 function c = gridChar(i) 
