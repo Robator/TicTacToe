@@ -1,10 +1,16 @@
-board=zeros(4,4,4);
-for turn=1:64
+board22=zeros(4,4,4);
+allmoves1=[];
+allmoves2=[];
+for turn=1:sum(board22(:)==0)
 	if rem(turn, 2) == 0
-		moveVec=playTTTT(board,1);
-		board(moveVec(1),moveVec(2),moveVec(3)) = 1;
+		disp('------------one---------');
+		moveVec=playTTTT(board22,1);
+		allmoves1=cat(2,allmoves1,moveVec);
+		board22(moveVec(2),moveVec(1),moveVec(3)) = 1;
 	else
-		moveVec=playTTTT(board,2);
-		board(moveVec(1),moveVec(2),moveVec(3)) = 2;
+		disp('------------two---------');
+		moveVec=playTTTT(board22,2);
+		allmoves2=cat(2,allmoves2,moveVec);
+		board22(moveVec(1),moveVec(2),moveVec(3)) = 2;
 	end
 end
