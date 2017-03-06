@@ -13,7 +13,7 @@ board22=zeros(4,4,4);
 				break
 			end
 			allmoves1=cat(2,allmoves1,moveVec);
-			board22(moveVec(2),moveVec(1),moveVec(3)) = 1;
+			board22(moveVec(1),moveVec(2),moveVec(3)) = 1;
 		else
 	% 		disp('------------two---------');
 			if rem(turn,5)==0
