@@ -30,7 +30,11 @@ function move = playTTTT(board, player)
         if(board(i) == 0) 
 			%try the first empty cell
             board(i) = player;
-            tempScore = -minimax(board, depth, plr);
+            if player==1
+            tempScore = -Xminimax(board, depth, plr);
+            else
+                tempScore = -Ominimax(board, depth, plr);
+            end
             board(i) = 0;%reset cell
             if(tempScore > score) 
                 score = tempScore;
@@ -125,7 +129,7 @@ function draw( b)
 	end
 end
 
-function a = minimax(board, depth, player) 
+function a = Xminimax(board, depth, player) %crouch
     if (player == -1)%transorm for filling board
         plr = 1;
     else
@@ -151,13 +155,60 @@ function a = minimax(board, depth, player)
     for i=1:64%For all moves,
         if(board(i) == 0)%if empty
             board(i) = plr;%try the move
-			thisScore = -minimax(board, depth-1, player*(-1));
+			thisScore = -Xminimax(board, depth-1, player*(-1));
 			
 			if score == 1 && player==-1 || score == -1 && player==1%cant play better
 				break
 			end
 
             if(thisScore > score) %found better solution
+                score = thisScore;
+                move = i;
+            end
+            board(i) = 0;%Reset board after try
+
+        end
+    end
+    if move == -1 %all cells are full
+        a = 0;
+        return
+	end
+    a = score;
+end
+
+function a = Ominimax(board, depth, player) 
+    if (player == -1)%transorm for filling board
+        plr = 1;
+    else
+        plr = 2;
+    end
+	%How is the position like for player (their turn) on board?
+    winner = win(board);
+    if(winner ~= 0) %someone has won
+        if (winner == 1)
+            wnr = -1;
+        else
+            wnr = 1;
+        end
+        a = wnr*player;
+		return
+	end
+	if depth == 0%depth limit exceeded
+		a=0;
+		return
+	end
+    move = -1;
+    score = -2;%Losing moves are preferred to no move
+    for i=1:64%For all moves,
+        if(board(i) == 0)%if empty
+            board(i) = plr;%try the move
+			thisScore = -Ominimax(board, depth-1, player*(-1));
+			
+			if score == -1 && player==1 || score == 1 && player==-1%cant play better
+				break
+			end
+
+            if(thisScore < score) %found better solution
                 score = thisScore;
                 move = i;
             end
