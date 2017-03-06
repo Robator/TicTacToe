@@ -1,9 +1,8 @@
-
 function move = playTTTT(board, player)
 %Tictactoe 3D game is based on minimax algorithm with some improvements
 
 	%transform matrix to an array - easier to implement
-	board = matrixToarray(board);
+	board = arrToBoard(board);
 	move = -1;%init
     score = -2;
 	depth = 2;
@@ -18,7 +17,7 @@ function move = playTTTT(board, player)
 	%players encoded for minimax
     if player==1 
         plr = -1;
-	elseif player==2
+    elseif player==2
         plr = 1;
 	else
 		disp('Wrong player');
@@ -39,10 +38,23 @@ function move = playTTTT(board, player)
 			end
 			if score == 1 %cant play better
 				break
-			end
+            end
+			
 		end
-	end
+		
+    end
+    if (score == 0) 
+        while(true)
+        move = round(63*rand)+1;
+        if (board(move)==0)
+            move = mtoV(move);
+           return; 
+        end
+            
+        end
+    else
     move = mtoV(move);
+    end
 	%make a move that has the maximum score
     %board(move) = plr;
 end
@@ -52,6 +64,7 @@ switch win(board)
         case 0
 			draw(board);
             disp('A draw. How droll.\n');
+			
         case 1
             draw(board);
             disp('X win.\n');
@@ -121,7 +134,12 @@ function a = minimax(board, depth, player)
 	%How is the position like for player (their turn) on board?
     winner = win(board);
     if(winner ~= 0) %someone has won
-        a = winner*player;
+        if (winner == 1)
+            wnr = -1;
+        else
+            wnr = 1;
+        end
+        a = wnr*player;
 		return
 	end
 	if depth == 0%depth limit exceeded
@@ -163,7 +181,7 @@ function res = mtoV(mv)
     res = [i j k]';
 end
 
-function boardArr = matrixToarray(board)
+function boardArr = arrToBoard(board)
     boardArr=[];
     for i=1:4
         for j=1:4
