@@ -1,35 +1,26 @@
 function move = playTTTT(board, player)
 %Tictactoe 3D game is based on minimax algorithm with some improvements
-
-	%transform matrix to an array - easier to implement
-	board = arrToBoard(board);
+	[board,plr] = input_transform(board,player);
+	
 	move = -1;%init
     score = -2;
 	depth = 2;
 	
-	%if empty - give random move
+	%if free makes random move
 	if (sum(board)==0)
 	   move = round(rand*63)+1;
 	   move = mtoV(move);
+	   write_state(board);
 	   return;
 	end
 
-	%players encoded for minimax
-    if player==1 
-        plr = -1;
-    elseif player==2
-        plr = 1;
-	else
-		disp('Wrong player');
-		return		
-	end
 	
 	%make minimax for all cells
     for i=1:64
 		%for empty cells try
         if(board(i) == 0) 
 			%try the first empty cell
-            board(i) = player;
+            board(i) = plr;
             tempScore = -minimax(board, depth, plr);
             board(i) = 0;%reset cell
             if(tempScore > score) 
@@ -38,39 +29,56 @@ function move = playTTTT(board, player)
 			end
 			if score == 1 %cant play better
 				break
-            end
-			
+			end
 		end
-		
-    end
-    if (score == 0) 
+	end
+	
+	write_state(board);
+    if (score == 0) %not a winning or losing combination
         while(true)
-        move = round(63*rand)+1;
-        if (board(move)==0)
-            move = mtoV(move);
-           return; 
+			move = round(63*rand)+1; %random 1...64
+			if (board(move)==0)
+				move = mtoV(move);
+				break
+			end
         end
-            
-        end
-    else
-    move = mtoV(move);
-    end
-	%make a move that has the maximum score
-    %board(move) = plr;
+	else
+		move=mtoV(move);
+	end
 end
 
-function write_winner(board)
+function [board,plr] = input_transform(board,player)
+	%transform matrix 4x4x4 to an array 1...64 - easier to implement
+	board = arrToBoard(board);
+	%transform players ids in array to inner representation
+	board( board==1 )=1;
+	board( board==2 )=-1;
+
+	%transform players ids to inner representation
+    if player==1 
+        plr = -1;
+    elseif player==2
+        plr = 1;
+	else
+		disp('Wrong player');
+		return		
+	end
+end
+
+function write_state(board)
+%prints board state or result of game
 switch win(board) 
         case 0
 			draw(board);
-            disp('A draw. How droll.\n');
-			
+			if sum(board(:)==0)==0
+				disp('A draw. How droll.\n');
+			end
         case 1
             draw(board);
-            disp('X win.\n');
-        case 2
+            disp('X win\n');
+        case -1
 			draw(board);
-            disp('O win. Inconceivable!\n');
+            disp('O win\n');
     end
 end
 
@@ -81,13 +89,13 @@ function c = gridChar(i)
             c='X';
         case 0
             c=' ';
-        case 2
+        case -1
             c='O';
     end
 end
 
-function win = win(board) %win combinations
-	%determines if a player has won, returns 0 otherwise.
+function win = win(board) 
+	%determines who has won or returns 0
 	
      wins1 = [1 2 3 4; 5 6 7 8; 9 10 11 12; 13 14 15 16;
         1 5 9 13; 2 6 10 14; 3 7 11 15; 4 8 12 16;
@@ -130,7 +138,8 @@ function a = minimax(board, depth, player)
         plr = 1;
     else
         plr = 2;
-    end
+	end
+	
 	%How is the position like for player (their turn) on board?
     winner = win(board);
     if(winner ~= 0) %someone has won
@@ -144,20 +153,18 @@ function a = minimax(board, depth, player)
     move = -1;
     score = -2;%Losing moves are preferred to no move
     for i=1:64%For all moves,
+		
         if(board(i) == 0)%if empty
-            board(i) = plr;%try the move
+            board(i) = player;%try the move
 			thisScore = -minimax(board, depth-1, player*(-1));
-			
 			if score == 1 && player==-1 || score == -1 && player==1%cant play better
 				break
 			end
-
             if(thisScore > score) %found better solution
                 score = thisScore;
                 move = i;
             end
             board(i) = 0;%Reset board after try
-
         end
     end
     if move == -1 %all cells are full
@@ -173,7 +180,7 @@ function res = mtoV(mv)
     j = ceil(mv/4);
     mv = mv - 4*(j-1);
     i = mv;
-    res = [i j k]';
+    res = [j i k]';
 end
 
 function boardArr = arrToBoard(board)
